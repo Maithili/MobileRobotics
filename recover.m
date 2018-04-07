@@ -1,27 +1,34 @@
-function s = recover (i,l,s,inv_R)
+function  recover (i,l,inv_R)
 
+global complete_sigma
 global State
 
 sum = 0;
-for j=1:length(s)
-    if (State.iSAM.R(i,j)~=0 && j~=i)
+for j=find(State.iSAM.R(i,:))
+    if (j~=i)
         if (j>l)
-          if (isnan(s(l,j)))
-              recover(l, j, s, inv_R);
+          if (isnan(complete_sigma(l,j)))
+              recover(l, j, inv_R);
           end
-          sum = sum + State.iSAM.R(i,j) * s(l,j);
+          sum = sum + State.iSAM.R(i,j) * complete_sigma(l,j);
         else
-          if (isnan(s(j,l)))
-              recover(j, l, s, inv_R);
+          if (isnan(complete_sigma(j,l)))
+              recover(j, l, inv_R);
           end
-          sum = sum + State.iSAM.R(i,j) * s(j,l);
+          sum = sum + State.iSAM.R(i,j) * complete_sigma(j,l);
         end
     end
 end
 
 if (i == l)                                 % diagonal entries
-    s(i,l) =  (inv_R(l) * (inv_R(l) - sum));
+    complete_sigma(i,l) =  (inv_R(l) * (inv_R(l) - sum));
+    if(isnan(complete_sigma(i,l)))
+        error('error in recover function. Wrongly set sigma value as nan');
+    end
 else                                        % off-diagonal entries
-    s(i,l) = (- sum * inv_R(i));
-    s(l,i) = s(i,l);
+    complete_sigma(i,l) = (- sum * inv_R(i));
+    if(isnan(complete_sigma(i,l)))
+        error('error in recover function. Wrongly set sigma value as nan');
+    end
+    complete_sigma(l,i) = complete_sigma(i,l);
 end

@@ -1,10 +1,13 @@
 function covariances_extract (landmark_nos)
-
 % input = array of landmark ids in order
 % output = square covariance matrix of robot pose followed by landmarks in
 %          same order as the input
 
 global State
+
+% if(iscolumn(landmark_nos))
+%     landmark_nos = landmark_nos';
+% end
 
 global complete_sigma
 [~,l] = size(State.iSAM.R);
@@ -32,7 +35,11 @@ for i=1:n_indices
     end
 end
 
-State.iSAM.sigma = complete_sigma([index_robot,index_landmark],[index_robot,index_landmark]);
+% minind = min([index_robot,index_landmark]);
 
+% recover(minind, minind,inv_diag_R);
+
+State.iSAM.sigma = complete_sigma([index_robot,index_landmark],[index_robot,index_landmark]);
+% State.iSAM.sigma
 end
   
